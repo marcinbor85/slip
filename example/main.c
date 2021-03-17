@@ -19,7 +19,7 @@ static const slip_descriptor_s slip_descriptor = {
 
 static slip_handler_s slip;
 
-int main ( void )
+int main(void)
 {
         slip_init(&slip, &slip_descriptor);
 
