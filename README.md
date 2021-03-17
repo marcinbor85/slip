@@ -8,7 +8,7 @@ Serial Line Internet Protocol
 - no dependencies
 
 ## Example
-`c
+```c
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -62,4 +62,4 @@ uint8_t write_byte(uint8_t byte)
         printf("TX: %02X\n", byte);
         return 1;
 }
-`
+```
