@@ -1,14 +1,3 @@
-# slip
-Serial Line Internet Protocol
-
-## Features
-- enhanced framing based on crc-ccitt 
-- callbacks driving
-- ready for embedded systems
-- no dependencies
-
-## Example
-```c
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -30,20 +19,29 @@ static const slip_descriptor_s slip_descriptor = {
 
 static slip_handler_s slip;
 
+static uint8_t loopback_buf_index;
+static uint8_t loopback_buf[100];
+
+void send(char *to_send)
+{
+        loopback_buf_index = 0;
+        printf("SEND: %s\n", to_send);
+        slip_send_message(&slip, to_send, strlen(to_send));
+
+        for (uint8_t i = 0; i < loopback_buf_index; i++) {
+                uint8_t rx = loopback_buf[i];
+                slip_read_byte(&slip, rx);
+        }
+}
+
 int main(void)
 {
         slip_init(&slip, &slip_descriptor);
 
-        char *to_send = "test";
-        printf("SEND: %s\n", to_send);
-        slip_send_message(&slip, to_send, strlen(to_send));
-
-        uint8_t emulated_recv[] = {0xC0, 0x74, 0x65, 0x73, 0x74, 0x1F, 0xC6, 0xC0};
-        for (uint8_t i = 0; i < sizeof(emulated_recv); i++) {
-                uint8_t rx = emulated_recv[i];
-                printf("RX: %02X\n", rx);
-                slip_read_byte(&slip, rx);
-        }
+        send("test");
+        send("message");
+        send("value 123");
+        
         return 0;
 }
 
@@ -59,7 +57,6 @@ void recv_message(uint8_t *data, uint32_t size)
 
 uint8_t write_byte(uint8_t byte) 
 {
-        printf("TX: %02X\n", byte);
+        loopback_buf[loopback_buf_index++] = byte;
         return 1;
 }
-```

@@ -23,7 +23,7 @@ int main(void)
 {
         slip_init(&slip, &slip_descriptor);
 
-        uint8_t *to_send = "test";
+        char *to_send = "test";
         printf("SEND: %s\n", to_send);
         slip_send_message(&slip, to_send, strlen(to_send));
 
