@@ -50,8 +50,9 @@ typedef struct {
         uint32_t buf_size;
         uint16_t crc_seed;
         
-        void (*recv_message)(uint8_t *data, uint32_t size);
-        uint8_t (*write_byte)(uint8_t byte);
+        void *send_recv_state;
+        void (*recv_message)(void *send_recv_state, uint8_t *data, uint32_t size);
+        uint8_t (*write_byte)(void *send_recv_state, uint8_t byte);
 } slip_descriptor_s;
 
 typedef struct {

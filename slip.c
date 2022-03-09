@@ -138,6 +138,7 @@ slip_error_t slip_read_byte(slip_handler_s *slip, uint8_t byte)
                         if (slip->size >= 2) {
                                 if (slip->crc == 0) {
                                         slip->descriptor->recv_message(
+                                                slip->descriptor->send_recv_state, 
                                                 slip->descriptor->buf,
                                                 slip->size - 2
                                                 );
@@ -198,10 +199,10 @@ static uint8_t write_encoded_byte(slip_handler_s *slip, uint8_t byte)
         }
 
         if (escape != 0) {
-                if (slip->descriptor->write_byte(SLIP_SPECIAL_BYTE_ESC) == 0)
+                if (slip->descriptor->write_byte(slip->descriptor->send_recv_state, SLIP_SPECIAL_BYTE_ESC) == 0)
                         return 0;
         }
-        if (slip->descriptor->write_byte(byte) == 0)
+        if (slip->descriptor->write_byte(slip->descriptor->send_recv_state, byte) == 0)
                 return 0;
         
         return 1;
@@ -217,7 +218,7 @@ slip_error_t slip_send_message(slip_handler_s *slip, uint8_t *data, uint32_t siz
         assert(data != NULL);
         assert(slip != NULL);
 
-        if (slip->descriptor->write_byte(SLIP_SPECIAL_BYTE_END) == 0)
+        if (slip->descriptor->write_byte(slip->descriptor->send_recv_state, SLIP_SPECIAL_BYTE_END) == 0)
                 return SLIP_ERROR_BUFFER_OVERFLOW;
 
         crc = slip->descriptor->crc_seed;
@@ -238,7 +239,7 @@ slip_error_t slip_send_message(slip_handler_s *slip, uint8_t *data, uint32_t siz
                         return SLIP_ERROR_BUFFER_OVERFLOW;
         }
 
-        if (slip->descriptor->write_byte(SLIP_SPECIAL_BYTE_END) == 0)
+        if (slip->descriptor->write_byte(slip->descriptor->send_recv_state, SLIP_SPECIAL_BYTE_END) == 0)
                 return SLIP_ERROR_BUFFER_OVERFLOW;
 
         return SLIP_NO_ERROR;

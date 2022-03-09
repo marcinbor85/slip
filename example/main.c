@@ -4,8 +4,8 @@
 
 #include "slip.h"
 
-void recv_message(uint8_t *data, uint32_t size);
-uint8_t write_byte(uint8_t byte);
+void recv_message(void *state, uint8_t *data, uint32_t size);
+uint8_t write_byte(void *state, uint8_t byte);
 
 static uint8_t buf[100];
 
@@ -13,6 +13,7 @@ static const slip_descriptor_s slip_descriptor = {
         .buf = buf,
         .buf_size = sizeof(buf),
         .crc_seed = 0xFFFF,
+        .send_recv_state = NULL,
         .recv_message = recv_message,
         .write_byte = write_byte,
 };
@@ -36,7 +37,7 @@ int main(void)
         return 0;
 }
 
-void recv_message(uint8_t *data, uint32_t size)
+void recv_message(void *state, uint8_t *data, uint32_t size)
 {
         char recv_buf[size + 1];
 
@@ -46,7 +47,7 @@ void recv_message(uint8_t *data, uint32_t size)
         printf("RECV: %s\n", recv_buf);
 }
 
-uint8_t write_byte(uint8_t byte) 
+uint8_t write_byte(void *state, uint8_t byte) 
 {
         printf("TX: %02X\n", byte);
         return 1;
